@@ -2,7 +2,7 @@
  
 import sys
 import paho.mqtt.client as mqtt
-from spotify_controller import SpotifyController
+from hermes_python.hermes import Hermes
 
 def intent_received(_self, hermes, intent_message):
     print('Intent {}'.format(intent_message.intent))
