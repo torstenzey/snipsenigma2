@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
  
 import sys
-import paho.mqtt.client as mqtt
 from hermes_python.hermes import Hermes
 
 def intent_received(_self, hermes, intent_message):
