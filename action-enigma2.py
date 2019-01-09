@@ -1,25 +1,33 @@
 #!/usr/bin/env python2
- 
-import sys
-from hermes_python.hermes import Hermes
+# -*- coding: utf-8 -*-
 
-def intent_received(_self, hermes, intent_message):
-    print('Intent {}'.format(intent_message.intent))
-    
-    for (slot_value, slot) in intent_message.slots.items():
-        print('Slot {} -> \n\tRaw: {} \tValue: {}'.format(slot_value, slot[0].raw_value, slot[0].slot_value.value.value))
+import paho.mqtt.client as mqtt
+import json
+import httplib
 
-    hermes.publish_end_session(intent_message.session_id, None)
-    
-# The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
-
-    client.subscribe("hermes/hotword/default/detected")
-    # Subscribe to intent topic
-    client.subscribe("hermes/intent/#")
-        
-
-# The callback for when a PUBLISH message is received from the server.
+    print('Connected')
+    mqtt.subscribe('hermes/intent/torstenzey:FernseherAn')
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+    # Parse the json response
+    intent_json = json.loads(msg.payload)
+    intentName = intent_json['intent']['intentName']
+    slots = intent_json['slots']
+    print('Intent {}'.format(intentName))
+
+    con = httplib.HTTPConnection('192.168.178.206')
+    print('1')
+    con.request("GET", "/web/powerstate?newstate=0")
+    print(con.getresponse().status)
+
+    for slot in slots:
+        slot_name = slot['slotName']
+        raw_value = slot['rawValue']
+        value = slot['value']['value']
+        print('Slot {} -> \n\tRaw: {} \tValue: {}'.format(slot_name, raw_value, value))
+
+mqtt = mqtt.Client()
+mqtt.on_connect = on_connect
+mqtt.on_message = on_message
+mqtt.connect('127.0.0.1', 1883)
+mqtt.loop_forever()
