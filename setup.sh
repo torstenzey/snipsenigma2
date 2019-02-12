@@ -1,6 +1,6 @@
 #/usr/bin/env bash -e
 
-PYTHON=`which python3`
+PYTHON=`which python2`
 VENV=venv
 
 if [ -f "$PYTHON" ]
@@ -22,7 +22,7 @@ then
 
     # Activate the virtual environment and install requirements.
     . $VENV/bin/activate
-    pip3 install -r requirements.txt
+    pip2 install -r requirements.txt
 
 else
     >&2 echo "Cannot find Python 3. Please install it."
