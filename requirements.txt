@@ -2,4 +2,6 @@
 hermes-python>=0.1
 xmltodict
 paho-mqtt
+httplib
+json
 future==0.16
